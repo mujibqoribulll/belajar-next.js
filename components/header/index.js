@@ -1,4 +1,4 @@
-import Menu from "../menu";
+
 import styles from "./styles.module.css";
 
 import { withAuth } from "../with-auth";
@@ -15,7 +15,10 @@ function Header() {
           <Link href="/users">Users</Link>
         </li>
         <li>
-          <Link href="/prodile">Profile</Link>
+          <Link href="/profile">Profile</Link>
+        </li>
+        <li>
+          <Link href="/notes">Notes</Link>
         </li>
       </ul>
     </div>

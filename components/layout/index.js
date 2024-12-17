@@ -5,7 +5,7 @@ import Head from "next/head";
 export default function Layout(props) {
   const { children, metaTitle, metaDescription } = props;
   return (
-    <div>
+    <div className="container mx-auto">
       <Head>
         <title>Create Next App - {metaTitle || 'qoribul'}</title>
         <meta
