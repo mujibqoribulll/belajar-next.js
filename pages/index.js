@@ -1,12 +1,15 @@
-import Layout from "@/components/layout";
 import { useEffect } from "react";
+
+import dynamic from "next/dynamic";
+import Image from "next/image";
+
+const LayoutComponent = dynamic(() => import("@/components/layout"));
 
 export default function Home() {
   async function fetchAlldata() {
     try {
       let response = await fetch("api/hello");
       let result = await response.json();
-      console.log('result', result)
     } catch (error) {
       console.log("error", error);
     }
@@ -18,9 +21,15 @@ export default function Home() {
 
   return (
     <>
-      <Layout metaTitle={"Home"} metaDescription={"belajar next js"}>
+      <LayoutComponent metaTitle={"Home"} metaDescription={"belajar next js"}>
         Content
-      </Layout>
+        <Image src={"/love.jpg"} width={400} height={400} alt="love.jpg" />
+        <img
+          src="/love.jpg"
+          style={{ width: 400, height: 400 }}
+          alt="love.jpg"
+        />
+      </LayoutComponent>
     </>
   );
 }
