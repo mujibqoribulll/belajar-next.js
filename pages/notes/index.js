@@ -1,34 +1,52 @@
+"use client";
+import ButtonIcon from "@/components/button";
+import Card from "@/components/card";
 import dynamic from "next/dynamic";
-import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/router";
+
+import { useEffect, useState } from "react";
+import { LuCheck, LuX } from "react-icons/lu";
+// import { Button } from "@/components/ui/button";
 
 const LayoutComponent = dynamic(() => import("@/components/layout"));
-
 export default function Notes(props) {
-  const { notes } = props;
+  const router = useRouter();
+  const [listNots, setListNots] = useState([]);
+  // console.log("listNots", listNots);
+  async function fetchData() {
+    try {
+      let result = await fetch("https://service.pace-unv.cloud/api/notes");
+      let listNote = await result.json();
+      setListNots(listNote);
+    } catch (error) {
+      console.log("error", error);
+    }
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   function handleCLick() {}
+
+  function handleNavigate() {
+    router.push(`/notes/add`);
+  }
   return (
     <>
       <LayoutComponent metaTitle={"Notes"} metaDescription={"belajar next js"}>
-        <div className="flex flex-col gap-y-2">
-          {notes.todos.map((item, index) => {
-            return (
-              <Link href={`/notes/${item?.id}`} key={index}>
-                <div className="bg-gray-700/20 p-5 flex flex-row justify-start gap-3 items-center">
-                  <input type="checkbox" checked={item?.completed} />
-                  <p className="font-semibold text-sm">{item?.todo}</p>
-                </div>
-              </Link>
-            );
-          })}
-          <div className="flex justify-center items-center">
-            <button
-              className="bg-slate-700/90 text-white text-lg px-4 py-2"
-              onClick={handleCLick}
-            >
-              Load more!
-            </button>
+        <div className="flex flex-row justify-between my-4 gap-2">
+          <div className="grid grid-cols-0 md:grid-cols-3 flex-1 gap-2">
+            {listNots?.data?.map((note, index) => {
+              return <Card note={note} key={index} />;
+            })}
+          </div>
+          <div className="min-w-max">
+            <ButtonIcon
+              label="Add Notes"
+              styleContainer="bg-blue-800/80"
+              onClick={() => handleNavigate()}
+            />
           </div>
         </div>
       </LayoutComponent>
@@ -36,10 +54,10 @@ export default function Notes(props) {
   );
 }
 
-export async function getStaticProps() {
-  const res = await fetch(
-    `https://dummyjson.com/todos?${new URLSearchParams({ limit: "10" })}`
-  );
-  const notes = await res.json();
-  return { props: { notes }, revalidate: 10 };
-}
+// export async function getStaticProps() {
+//   const res = await fetch(
+//     `https://dummyjson.com/todos?${new URLSearchParams({ limit: "10" })}`
+//   );
+//   const notes = await res.json();
+//   return { props: { notes }, revalidate: 10 };
+// }
