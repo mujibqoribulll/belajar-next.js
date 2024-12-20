@@ -5,14 +5,11 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 
 import { useEffect, useState } from "react";
-import { LuCheck, LuX } from "react-icons/lu";
-// import { Button } from "@/components/ui/button";
 
 const LayoutComponent = dynamic(() => import("@/components/layout"));
 export default function Notes(props) {
   const router = useRouter();
   const [listNots, setListNots] = useState([]);
-  // console.log("listNots", listNots);
   async function fetchData() {
     try {
       let result = await fetch("https://service.pace-unv.cloud/api/notes");
@@ -27,7 +24,22 @@ export default function Notes(props) {
     fetchData();
   }, []);
 
-  function handleCLick() {}
+  async function handleDelete(id) {
+    try {
+      let result = await fetch(
+        `https://service.pace-unv.cloud/api/notes/delete/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
+      console.log('result', result)
+      if (result?.status === 200) {
+        fetchData();
+      }
+    } catch (error) {
+      console.log("error", error);
+    }
+  }
 
   function handleNavigate() {
     router.push(`/notes/add`);
@@ -38,7 +50,13 @@ export default function Notes(props) {
         <div className="flex flex-row justify-between my-4 gap-2">
           <div className="grid grid-cols-0 md:grid-cols-3 flex-1 gap-2">
             {listNots?.data?.map((note, index) => {
-              return <Card note={note} key={index} />;
+              return (
+                <Card
+                  note={note}
+                  key={index}
+                  onDelete={(id) => handleDelete(id)}
+                />
+              );
             })}
           </div>
           <div className="min-w-max">
