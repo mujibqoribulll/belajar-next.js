@@ -1,4 +1,5 @@
 import ButtonIcon from "@/components/button";
+import { useMutation } from "@/hooks/useMutation";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -6,33 +7,27 @@ import { useState } from "react";
 const LayoutComponent = dynamic(() => import("@/components/layout"));
 export default function AddNote() {
   const route = useRouter();
+  const {
+    function: { mutation },
+  } = useMutation();
   const [note, setNote] = useState({
     title: "",
     description: "",
   });
 
-  console.log("note222", note);
   async function handleSubmit(e) {
     const { description, title } = note;
-    console.log("note", note);
     e.preventDefault();
     if ((!title, !description)) {
       return null;
     }
-    try {
-      let response = await fetch("https://service.pace-unv.cloud/api/notes", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(note),
-      });
-
-      const result = await response.json();
-      if (result?.success) {
-        route.push("/notes");
-      }
-    } catch (error) {}
+    const result = await mutation({
+      url: "https://service.pace-unv.cloud/api/notes",
+      payload: note,
+    });
+    if (result?.success) {
+      route.push("/notes");
+    }
   }
 
   function handleChange(e) {

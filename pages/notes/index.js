@@ -1,6 +1,7 @@
 "use client";
 import ButtonIcon from "@/components/button";
 import Card from "@/components/card";
+import { useQuery } from "@/hooks/useQuery";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 
@@ -8,21 +9,10 @@ import { useEffect, useState } from "react";
 
 const LayoutComponent = dynamic(() => import("@/components/layout"));
 export default function Notes(props) {
+  const { data, isLoading } = useQuery({
+    prefixUrl: "https://service.pace-unv.cloud/api/notes",
+  });
   const router = useRouter();
-  const [listNots, setListNots] = useState([]);
-  async function fetchData() {
-    try {
-      let result = await fetch("https://service.pace-unv.cloud/api/notes");
-      let listNote = await result.json();
-      setListNots(listNote);
-    } catch (error) {
-      console.log("error", error);
-    }
-  }
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   async function handleDelete(id) {
     try {
@@ -30,9 +20,10 @@ export default function Notes(props) {
         `https://service.pace-unv.cloud/api/notes/delete/${id}`,
         {
           method: "DELETE",
-        }
+        },
+        para
       );
-      console.log('result', result)
+      console.log("result", result);
       if (result?.status === 200) {
         fetchData();
       }
@@ -44,12 +35,18 @@ export default function Notes(props) {
   function handleNavigate() {
     router.push(`/notes/add`);
   }
+  if (isLoading)
+    return (
+      <div className="flex h-screen flex-row justify-center items-center">
+        <div className="border-8 border-x-emerald-500 border-teal-600 w-20 animate-spin h-20 rounded-full" />
+      </div>
+    );
   return (
     <>
       <LayoutComponent metaTitle={"Notes"} metaDescription={"belajar next js"}>
         <div className="flex flex-row justify-between my-4 gap-2">
           <div className="grid grid-cols-0 md:grid-cols-3 flex-1 gap-2">
-            {listNots?.data?.map((note, index) => {
+            {data?.map((note, index) => {
               return (
                 <Card
                   note={note}
