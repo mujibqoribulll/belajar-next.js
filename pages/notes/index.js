@@ -2,16 +2,23 @@
 import ButtonIcon from "@/components/button";
 import Card from "@/components/card";
 import { useQuery } from "@/hooks/useQuery";
+import fetcher from "@/utils/fetcher";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 
 import { useEffect, useState } from "react";
+import useSWR from "swr";
 
 const LayoutComponent = dynamic(() => import("@/components/layout"));
 export default function Notes(props) {
-  const { data, isLoading } = useQuery({
-    prefixUrl: "https://service.pace-unv.cloud/api/notes",
-  });
+  // const { data, isLoading } = useQuery({
+  //   prefixUrl: "https://service.pace-unv.cloud/api/notes",
+  // });
+
+  const { data, error, isLoading } = useSWR('https://service.pace-unv.cloud/api/notes', fetcher, {
+    revalidateOnFocus: true,
+  })
+  console.log('data',data)
   const router = useRouter();
 
   async function handleDelete(id) {
@@ -46,7 +53,7 @@ export default function Notes(props) {
       <LayoutComponent metaTitle={"Notes"} metaDescription={"belajar next js"}>
         <div className="flex flex-row justify-between my-4 gap-2">
           <div className="grid grid-cols-0 md:grid-cols-3 flex-1 gap-2">
-            {data?.map((note, index) => {
+            {data?.data?.map((note, index) => {
               return (
                 <Card
                   note={note}
